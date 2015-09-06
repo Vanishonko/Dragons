@@ -1,9 +1,9 @@
 var myX = 500, myY = 300;
-var vragX=[-252, -278],vragY=[100, 300];
+var enemyX=[-252, -278],enemyY=[100, 300];
 var curDragon = 0,curEnemy = 0, back = new Image();
 var numDragons = 13, numEnemies = 19, fireball=new Image(), fireballX=[],fireballY=[];
-var dragons = [], enemies = [], broyPlamaciNaEkrana=0, points=0;
-var nadolu=false, nagore=false, alive=true, attack=new Audio(), wings = new Audio(), scream=[], death= new Audio();
+var dragons = [], enemies = [], AmountOfFiresOnTheScreen=0, points=0;
+var down=false, up=false, alive=true, attack=new Audio(), wings = new Audio(), scream=[], death= new Audio();
 death.src = "Death.mp3";
 function startScream() {
     newScream = new Audio();
@@ -26,40 +26,40 @@ back.src = "back.jpg";
 function update() {
     if(alive){
         wings.play();
-        if (vragX.length == 0) {
-            vragX.push(-252 - Math.random() * 200);
-            vragY.push(-100 + Math.random() * (800 - 252));
+        if (enemyX.length == 0) {
+            enemyX.push(-252 - Math.random() * 200);
+            enemyY.push(-100 + Math.random() * (800 - 252));
         }
-        if(nadolu==true){
+        if(down==true){
             myY=myY+3;
         }
-        if(nagore==true){
+        if(up==true){
             myY=myY-3;
         }
-        for (i = 0; i < vragX.length; i++) {
-            vragX[i] += 2;
-            if (vragX[i] > 800) {
-                vragX[i] = -252;
-                vragX.push(-252 - Math.random() * 200);
-                vragY.push(-100 + Math.random() * (800 - 252));
+        for (i = 0; i < enemyX.length; i++) {
+            enemyX[i] += 2;
+            if (enemyX[i] > 800) {
+                enemyX[i] = -252;
+                enemyX.push(-252 - Math.random() * 200);
+                enemyY.push(-100 + Math.random() * (800 - 252));
                 ++points;
             }
-            if(areColliding(myX,myY,111,160,vragX[i],vragY[i],207,140)){
+            if(areColliding(myX,myY,111,160,enemyX[i],enemyY[i],207,140)){
                 alive=false;
                 wings.pause();
                 death.play();
             }
             for(e=0;e<1000;++e){
-                if(areColliding(fireballX[broyPlamaciNaEkrana-e],fireballY[broyPlamaciNaEkrana-             e],90,59,vragX[i],vragY[i],252,252)){
+                if(areColliding(fireballX[AmountOfFiresOnTheScreen-e],fireballY[AmountOfFiresOnTheScreen-e],90,59,enemyX[i],enemyY[i],252,252)){
                     startScream();
-                    vragX.splice(i, 1);
-                    vragY.splice(i, 1);
+                    enemyX.splice(i, 1);
+                    enemyY.splice(i, 1);
                     ++points;
                 }
             }
         }
         for(i=0;i<1000;++i){
-                fireballX[broyPlamaciNaEkrana-i]=fireballX[broyPlamaciNaEkrana-i]-10;
+                fireballX[AmountOfFiresOnTheScreen-i]=fireballX[AmountOfFiresOnTheScreen-i]-10;
         }
     }
 	if (!localStorage.highscore){
@@ -80,11 +80,11 @@ function draw() {
         if (curDragon >= dragons.length) {
             curDragon = 0;
         }
-        for (i = 0; i < vragX.length; i++) {
-            context.drawImage(enemies[Math.floor(curEnemy)], vragX[i], vragY[i], 252, 252);
+        for (i = 0; i < enemyX.length; i++) {
+            context.drawImage(enemies[Math.floor(curEnemy)], enemyX[i], enemyY[i], 252, 252);
         }
         for(i=0;i<1000;++i){
-            context.drawImage(fireball, fireballX[broyPlamaciNaEkrana-i], fireballY[broyPlamaciNaEkrana-i], 90, 59);
+            context.drawImage(fireball, fireballX[AmountOfFiresOnTheScreen-i], fireballY[AmountOfFiresOnTheScreen-i], 90, 59);
         }
         curEnemy += 1 / 3;
         if (curEnemy >= enemies.length) {
@@ -100,26 +100,26 @@ function draw() {
 function keydown(key) {
     if(alive){
         if(key==38){
-            nagore=true;
+            up=true;
         }
         if(key==40){
-            nadolu=true;
+            down=true;
         }
     }
 }
 function keyup(key) {
     if(alive){
         if(key==32){
-            fireballX[broyPlamaciNaEkrana+1]=myX;
-            fireballY[broyPlamaciNaEkrana+1]=myY;
-            broyPlamaciNaEkrana+=1;
+            fireballX[AmountOfFiresOnTheScreen+1]=myX;
+            fireballY[AmountOfFiresOnTheScreen+1]=myY;
+            AmountOfFiresOnTheScreen+=1;
             attack.play();
         }    
         if(key==38){
-            nagore=false;
+            up=false;
         }
         if(key==40){
-            nadolu=false;
+            down=false;
         }
     }
     if(alive==false && key==32){
@@ -127,8 +127,8 @@ function keyup(key) {
         if(localStorage.highscore<points){
             localStorage.highscore=points
         }
-        for (i = 0; i < vragX.length; i++) {
-            vragX[i] = -252;
+        for (i = 0; i < enemyX.length; i++) {
+            enemyX[i] = -252;
         }
         myX = 500; 
         myY = 300;
